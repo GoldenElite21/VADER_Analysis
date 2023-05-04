@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Pie Charts{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% for chart_data in charts_data %}
+        <div class="col-md-4">
+            <h5 class="text-center mt-3">{{ chart_data.title }}</h5>
+            <canvas id="{{ chart_data.chart_id }}"></canvas>
+            <p class="text-center">Total: {{ chart_data.total_count }}</p>
+            <ul class="list-group">
+                {% for item in chart_data.data %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ item.label }}
+                    <span class="badge badge-primary badge-pill bg-primary">{{ item.value }}</span>
+                    <span class="badge badge-secondary badge-pill bg-dark text-white">{{ item.count }} ({{ item.percentage }}%)</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        {% for chart_data in charts_data %}
+        // Get the data for the {{ chart_data.title }} chart
+        var {{ chart_data.chart_id }}_data = [
+            {% for item in chart_data.data %}
+                {
+                    value: {{ item.value }},
+                    label: "{{ item.label }}",
+                    count: "{{ item.count }}",
+                    percentage: "{{ item.percentage }}"
+                },
+            {% endfor %}
+        ];
+
+        // Create the {{ chart_data.title }} chart
+        var {{ chart_data.chart_id }}_ctx = document.getElementById('{{ chart_data.chart_id }}').getContext('2d');
+        var {{ chart_data.chart_id }}_chart = new Chart({{ chart_data.chart_id }}_ctx, {
+            type: 'pie',
+            data: {
+                datasets: [{
+                    data: {{ chart_data.chart_id }}_data.map(function(item) { return item.value }),
+                    backgroundColor: ['#007bff', '#dc3545']
+                }],
+                labels: {{ chart_data.chart_id }}_data.map(function(item) { return item.label })
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: '{{ chart_data.title }} Breakdown'
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            var dataset = data.datasets[tooltipItem.datasetIndex];
+                            var item = dataset.data[tooltipItem.index];
+                            var label = item.label || '';
+                            var count = item.count || '';
+                            var percentage = item.percentage || '';
+                            return label + ': ' + count + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        });
+        {% endfor %}
+    </script>
+
+    <style>
+        .badge-primary.bg-primary {
+            background-color: #004085;
+        }
+
+        .badge-secondary.bg-dark.text-white {
+            background-color: #343a40;
+            color: #fff;
+        }
+    </style>
+{% endblock %}
+

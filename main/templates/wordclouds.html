@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Wordclouds{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Word Clouds and Top 10 Most Common Words by Subset</h2>
+    {% for subset_name, subset_reviews in subsets.items %}
+    <div class="row mb-5">
+        <div class="col-md-10 offset-md-1">
+            <h3 class="text-center">{{ subset_name }}</h3>
+            <div class="row mt-4">
+                <div class="col-md-6 mb-3">
+                    <img src="{{ MEDIA_URL }}wordclouds/{{ subset_name }}.png" class="img-fluid mx-auto d-block" alt="{{ subset_name }} Word Cloud">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h4>Top 10 Most Common Words:</h4>
+                    <ul class="list-unstyled">
+                        {% for subset_word_freq in top_10_words %}
+                            {% if subset_word_freq.subset_name == subset_name %}
+                                {% for word, freq in subset_word_freq.top_10 %}
+                                    <li>{{ word }} ({{ freq }})</li>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

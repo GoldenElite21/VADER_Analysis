@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="mt-5 mb-3">Settings</h1>
+
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">Setting</th>
+          <th scope="col">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Title Weight</th>
+          <td>{{ settings.TITLE_WEIGHT }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Text Weight</th>
+          <td>{{ settings.TEXT_WEIGHT }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Vader Weight</th>
+          <td>{{ settings.VADER_WEIGHT }}</td>
+        </tr>
+        <tr>
+          <th scope="row">Test Accuracy</th>
+          <td>{{ settings.TEST_ACCURACY }}%</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card bg-light mt-5">
+      <div class="card-body">
+        <p><strong>Title Weight</strong> and <strong>Text Weight</strong> are ratios between each other to determine how heavily the sentiment of each should be considered. In other words, the sentiment of the title is multiplied by the title weight, and the sentiment of the text is multiplied by the text weight, and the two values are added together, then divided by their sum to get the overall sentiment score for the review.</p>
+        <p><strong>Vader Weight</strong> is the weight of each sentiment when calculating the overall sentiment score for the review. The Vader sentiment analyzer returns four values: positive, negative, neutral, and compound. The compound score is a combination of the other three scores, and is used as the overall sentiment score for the review.</p>
+        <p><strong>Test Accuracy</strong> is the accuracy at which these values performed in our sample data. This value is just for demonstration purposes, as it is the result of the values used above.</p>
+      </div>
+    </div>
+  </div>
+{% endblock %}

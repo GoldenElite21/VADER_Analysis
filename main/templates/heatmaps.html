@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load base64 %}
+
+{% block title %}Heatmaps{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-5">Heatmaps</h1>
+        {% for subset_name, plot in plots.items %}
+            <div class="card mb-5">
+                <div class="card-header bg-primary text-white">
+                    <h3>{{ subset_name }}</h3>
+                </div>
+                <div class="card-body">
+                    <img src="data:image/png;base64,{{ plot|to_base64 }}" class="img-fluid" />
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

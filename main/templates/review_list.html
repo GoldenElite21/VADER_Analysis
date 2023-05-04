@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Review List{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <table id="reviews-table" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Text</th>
+                        <th>Num Words</th>
+                        <th>Positive</th>
+                        <th>Negative</th>
+                        <th>Neutral</th>
+                        <th>Compound</th>
+                        <th>Sentiment</th>
+                        <th>Given Rating</th>
+                        <th>Analysis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/v/dt/dt-1.11.2/datatables.min.js" defer></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.11.2/datatables.min.css"/>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    console.log('Document ready!');
+    var table = $('#reviews-table').DataTable({
+        ajax: {
+            url: '{% url "reviews_data" %}',
+            dataSrc: 'data'
+        },
+        columns: [
+            {data: 'title'},
+            {
+                data: 'text',
+                render: function (data, type, row, meta) {
+                    // Show preview of text until clicked
+                    if (type === 'display') {
+                        var preview = data.substring(0, 50);
+                        if (data.length > 50) {
+                            preview += '...';
+                        }
+                        return '<span class="preview-text" data-preview="' + preview + '" data-text="' + data + '">' + preview + '</span>';
+                    } else {
+                        return data;
+                    }
+                }
+            },
+            {data: 'num_words'},
+            {data: 'pos'},
+            {data: 'neg'},
+            {data: 'neu'},
+            {data: 'compound'},
+            {data: 'sentiment'},
+            {data: 'expected_rating'},
+            {data: 'analysis'}
+        ],
+        order: [[0, 'asc']],
+        searching: true,
+        processing: false,
+        serverSide: false,
+        pageLength: 10,
+        lengthMenu: [10, 25, 50, 100],
+        pagingType: 'simple_numbers',
+        language: {
+            info: 'Showing _START_ to _END_ of _TOTAL_ reviews',
+            infoEmpty: 'No reviews found',
+            infoFiltered: '(filtered from _MAX_ total reviews)',
+            lengthMenu: 'Show _MENU_ reviews per page',
+            loadingRecords: 'Loading...',
+            processing: 'Processing...',
+            search: 'Search reviews:',
+            zeroRecords: 'No matching reviews found'
+        },
+        initComplete: function () {
+            console.log('DataTable initialized!');
+            console.log('Data received: ', this.api().data());
+            // Add search input fields for each column
+            this.api().columns().every(function () {
+                var column = this;
+                var input = $('<input type="text" class="form-control form-control-sm mb-2" placeholder="Search"/>')
+                    .appendTo($(column.header()))
+                    .on('keyup', function () {
+                        column.search($(this).val(), false, false, true).draw();
+                    });
+            });
+        }
+    });
+    
+    // Toggle between preview and full text when preview is clicked
+    $('#reviews-table tbody').on('click', '.preview-text', function () {
+        var text = $(this).data('text');
+        var preview = $(this).data('preview');
+        if ($(this).text() === preview) {
+            $(this).text(text);
+        } else {
+            $(this).text(preview);
+        }
+    });
+});
+</script>
+
+{% endblock %}
